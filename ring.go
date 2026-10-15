@@ -2,9 +2,9 @@
 package hashring
 
 import (
-	"errors"
 	"crypto/md5"
 	"encoding/binary"
+	"errors"
 	"sort"
 	"strconv"
 	"sync"
