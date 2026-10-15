@@ -3,7 +3,8 @@ package hashring
 
 import (
 	"errors"
-	"hash/crc32"
+	"crypto/md5"
+	"encoding/binary"
 	"sort"
 	"strconv"
 	"sync"
@@ -29,7 +30,11 @@ func New(replicas int) *Ring {
 	return &Ring{replicas: replicas, owners: map[uint32]string{}, nodes: map[string]struct{}{}}
 }
 
-func hash(s string) uint32 { return crc32.ChecksumIEEE([]byte(s)) }
+// hash uses the first 4 bytes of MD5 for a well-spread (non-cryptographic) position.
+func hash(s string) uint32 {
+	sum := md5.Sum([]byte(s))
+	return binary.BigEndian.Uint32(sum[:4])
+}
 
 // Add inserts nodes into the ring. Adding an existing node is a no-op.
 func (r *Ring) Add(nodes ...string) {
